@@ -9,12 +9,20 @@ spec:
     runAsUser: 1000
     runAsGroup: 3000
     fsGroup: 2000   # supplementary group
+    appArmorProfile:   # pod or container level
+      type: Localhost  # RuntimeDefault # Unconfined 
+      localhostProfile: k8s-apparmor-example-deny-write	  # installed PROFILE name
+    seccompProfile:
+      type: Localhost
+      localhostProfile: profiles/audit.json   # default dir /var/lib/kubelet/seccomp
   containers:
   - name: sec-ctx-demo
     image: busybox:1.28
     command: [ "sh", "-c", "sleep 1h" ]
     securityContext:   # for this container only, can also have runasuser/runasgroup
       privileged: false
-      allowPrivilegeEscalation: false
+      allowPrivilegeEscalation: false     
+      readOnlyRootFilesystem: true     # only in container
       capabilities:  # SElinux capabilities
         add: ["NET_ADMIN", "SYS_TIME"]
+
