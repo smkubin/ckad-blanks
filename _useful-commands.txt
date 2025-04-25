@@ -4,6 +4,11 @@ cat /etc/kubernetes/manifests/etcd.yaml | grep -A1 hostPath
 ETCDCTL_API=3 \
 etcdctl snapshot save ~/db.db --cacert /etc/kubernetes/pki/etcd/ca.crt --cert /etc/kubernetes/pki/etcd/server.crt --key /etc/kubernetes/pki/etcd/server.key \
 --endpoints 127.0.0.1:2379
+# read etcd key
+ETCDCTL_API=3 etcdctl --cacert=/etc/kubernetes/pki/etcd/ca.crt --cert=/etc/kubernetes/pki/etcd/server.crt --key=/etc/kubernetes/pki/etcd/server.key \
+get /registry/secrets/default/secret1 | hexdump -C
+# alternatively: find etcd process, in proc/pid/fd find db and look there
+
 
 ### cluster init
 source <(kubeadm completion bash)
