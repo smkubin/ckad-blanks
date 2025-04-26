@@ -5,16 +5,10 @@ metadata:
 	namespace: my-ns
 spec:
   serviceAccountName: k8s-sa   # service account
-  securityContext: # for any container in the pod 
+  securityContext: #  define runAsNonRoot, allowPrivilegeEscalation, readOnlyRootFilesystem, selinux, seccomp PER CONTAINER  
     runAsUser: 1000
     runAsGroup: 3000
     fsGroup: 2000   # supplementary group
-    appArmorProfile:   # pod or container level
-      type: Localhost  # RuntimeDefault # Unconfined 
-      localhostProfile: k8s-apparmor-example-deny-write	  # installed PROFILE name
-    seccompProfile:
-      type: Localhost
-      localhostProfile: profiles/audit.json   # default dir /var/lib/kubelet/seccomp
   containers:
   - name: sec-ctx-demo
     image: busybox:1.28
@@ -23,6 +17,11 @@ spec:
       privileged: false
       allowPrivilegeEscalation: false     
       readOnlyRootFilesystem: true     # only in container
-      capabilities:  # SElinux capabilities
+      capabilities:  # linux capabilities
         add: ["NET_ADMIN", "SYS_TIME"]
-
+      appArmorProfile:   # 
+        type: Localhost  # RuntimeDefault # Unconfined 
+        localhostProfile: k8s-apparmor-example-deny-write	  # installed PROFILE name
+      seccompProfile:
+        type: Localhost
+        localhostProfile: profiles/audit.json   # default dir /var/lib/kubelet/seccomp
