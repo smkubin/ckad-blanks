@@ -21,6 +21,31 @@ kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
 #
 kubeadm token create --print-join-command
 
+### cluster update https://kubernetes.io/docs/tasks/administer-cluster/kubeadm/kubeadm-upgrade/
+# kubeadm
+apt-mark unhold kubeadm
+apt-mark hold kubectl kubelet
+apt install kubeadm=1.30.1-1.1
+apt-mark hold kubeadm
+# plan
+kubeadm uprgrade plan
+# upgrade controlplane
+k drain cluster3-controlplane1 --ignore-daemonsets
+kubeadm upgrade apply v1.30.1
+apt-mark unhold kubelet kubectl
+apt install kubelet=1.30.1-1.1 kubectl=1.30.1-1.1
+apt-mark hold kubelet kubectl
+service kubelet restart
+k uncordon cluster3-controlplane1
+# upgrade workers
+k drain cluster3-node1 --ignore-daemonsets
+ssh cluster3-node # switch to worker
+apt install kubeadm
+kubeadm upgrade node
+apt install kubelet=1.30.1-1.1 kubectl=1.30.1-1.1
+service kubelet restart
+k uncordon cluster3-node1
+
 
 ### Helm
 source <(helm completion bash)
