@@ -5,6 +5,10 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /    
 spec:
+  tls:     # remove fot non-tls
+  - hosts:
+      - foo.bar.com
+    secretName: testsecret-tls  # secret of TLS type with a key and crt
   ingressClassName: nginx-example # remove the line for  default class
   rules:
   - host: foo.bar.com
