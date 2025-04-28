@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    kubernetes.io/metadata.name: red
+    # MODE must be one of `enforce`, `audit`, or `warn`.
+    # LEVEL must be one of `privileged`, `baseline`, or `restricted`.
+    # pod-security.kubernetes.io/<MODE>: <LEVEL>
+    # pod-security.kubernetes.io/<MODE>-version: <VERSION>
+    pod-security.kubernetes.io/enforce: baseline 
+  name: red
+spec:  
+  finalizers:
+  - kubernetes
