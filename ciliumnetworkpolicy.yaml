@@ -1,3 +1,4 @@
+# https://docs.cilium.io/en/latest/security/policy/
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
@@ -7,15 +8,32 @@ spec:
   endpointSelector:
     matchLabels:
       app: frontend
-  ingress:
-    - fromEndpoints:
-        - matchLabels:
-            app: backend
-      toPorts:
+  ingress:       
+    - fromEndpoints:   # L3
+      - matchLabels:      #  app=n3 in namespace = n2
+            app: n3
+            io.kubernetes.pod.namespace: n2
+      toPorts:        # L4
         - ports:
             - port: "80"
               protocol: TCP
-          rules:
+          rules:        #L7
             http:
               - method: "GET"
-                path: "/public"
+                path: "/public"                
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        type: messenger
+    authentication:
+      mode: "required"     # Enable Mutual Authentication
+  egressDeny:      # deny rule - can be ingressDeny also
+  - toEndpoints:
+    - matchLabels:
+        type: database  # we use the label of the Pods behind the Service "database"
+    icmps:      # L4 - block icmp
+    - fields:
+      - type: 8
+        family: IPv4
+      - type: EchoRequest
+        family: IPv6
