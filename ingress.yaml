@@ -3,6 +3,7 @@ kind: Ingress
 metadata:
   name: name-virtual-host-ingress
   annotations:
+    #nginx.ingress.kubernetes.io/ssl-redirect: "true"    # to enforce HTTPS
     nginx.ingress.kubernetes.io/rewrite-target: /    
 spec:
   tls:     # remove fot non-tls
